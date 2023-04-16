@@ -4,8 +4,8 @@ from django.contrib.auth.models import BaseUserManager
 
 class CustomUserManager(BaseUserManager):
 
-	def create_user(self, phon_number, email, full_name, password):
-		if not phon_number:
+	def create_user(self, phone_number, email, full_name, password):
+		if not phone_number:
 			raise ValueError('user must have phone number')
 
 		if not email:
@@ -15,7 +15,7 @@ class CustomUserManager(BaseUserManager):
 			raise ValueError('user must have full name')
 
 		user = self.model(
-			phon_number=phon_number,
+			phone_number=phone_number,
 			email=self.normalize_email(email),
 			full_name=full_name
 			)
@@ -23,9 +23,9 @@ class CustomUserManager(BaseUserManager):
 		user.save(using=self._db)
 		return user
 
-	def create_superuser(self, phon_number, email, full_name, password):
+	def create_superuser(self, phone_number, email, full_name, password):
 		
-		 user = self.create_user(phon_number, email, full_name, password)
-		 user.is_admin = True
-		 user.is_superuser = True
-		 user.save(using=self._db)
+		user = self.create_user(phone_number, email, full_name, password)
+		user.is_admin = True
+		user.is_superuser = True
+		user.save(using=self._db)
