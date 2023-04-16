@@ -28,7 +28,7 @@ class CustomUserCreationForm(forms.ModelForm):
         return user
     
 
-class CustomUserChaangeForm(forms.ModelForm):
+class CustomUserChangeForm(forms.ModelForm):
     password = ReadOnlyPasswordHashField(
         help_text='you can change password from this <a href="../password/">link</a>'
         )
