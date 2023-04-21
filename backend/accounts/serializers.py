@@ -26,7 +26,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         match = re.search(pattern, value)
 
         if not match:
-            raise serializers.ValidationError('The password must have at least 8 characters, numbers, upper and lower case letters and symbols (@#%^&*!+=?><)')
+            raise serializers.ValidationError('The password must have at least 8 characters, numbers, upper and lower case letters and symbols (@$!%*?&)')
         return value
     
     def validate(self, data):
