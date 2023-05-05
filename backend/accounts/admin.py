@@ -14,16 +14,16 @@ class CustomUserAdmin(BaseUserAdmin):
     readonly_fields = ('last_login',)
 
     fieldsets = (
-        (None, {'fields':('email', 'phone_number', 'full_name', 'password')}),
+        (None, {'fields':('email', 'phone_number', 'password')}),
         ('permissions', {'fields':('is_active', 'is_admin', 'is_superuser', 'last_login', 'groups', 'user_permissions')})
     )
 
     add_fieldsets = (
-        (None, {'fields':('phone_number', 'email', 'full_name', 'password1', 'password2')}),
+        (None, {'fields':('phone_number', 'email', 'password1', 'password2')}),
     )
 
-    search_fields = ('email', 'full_name')
-    ordering = ('full_name',)
+    search_fields = ('email',)
+    ordering = ('email',)
     filter_horizontal = ('groups', 'user_permissions')
 
     def get_form(self, request, obj=None, **kwargs):
@@ -32,7 +32,7 @@ class CustomUserAdmin(BaseUserAdmin):
         if not is_superuser:
             form.base_fields['is_superuser'].disabled = True
         return form
-    
+
 
 admin.site.register(CustomUser, CustomUserAdmin)
 
