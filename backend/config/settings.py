@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 
     # DRF
     'rest_framework',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -138,3 +139,11 @@ AUTHENTICATION_BACKENDS = [
     'accounts.authenticate.EmailBackend',
     'accounts.authenticate.MobileBackend',
 ]
+
+# DRF
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
