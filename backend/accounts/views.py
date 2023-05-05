@@ -6,7 +6,7 @@ from .serializers import UserRegisterSerializer
 
 class UserRegister(APIView):
     """
-    Register new users using phone number or email and password.
+    Register new users using phone number and password.
     """
 
     def post(self, request):

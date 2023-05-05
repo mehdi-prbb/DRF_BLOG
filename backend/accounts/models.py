@@ -17,7 +17,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 	REQUIRED_FIELDS = ['email']
 
 	def __str__(self):
-		return self.email
+		return self.phone_number
 
 	@property
 	def is_staff(self):
