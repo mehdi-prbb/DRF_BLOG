@@ -1,8 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.models import Group
 
-from .models import CustomUser
+from .models import CustomUser, OtpCode
 from . forms import CustomUserChangeForm, CustomUserCreationForm
 
 
@@ -34,8 +33,10 @@ class CustomUserAdmin(BaseUserAdmin):
             form.base_fields['is_superuser'].disabled = True
         return form
     
-    # def get_form(self, request: Any, obj: Optional[_ModelT] = ..., change: bool = ..., **kwargs: Any) -> Any:
-    #     return super().get_form(request, obj, change, **kwargs)
-
 
 admin.site.register(CustomUser, CustomUserAdmin)
+
+
+@admin.register(OtpCode)
+class OtpCodeAdmin(admin.ModelAdmin):
+    list_display = ('phone_number', 'code', 'created')
