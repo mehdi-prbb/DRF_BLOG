@@ -8,6 +8,7 @@ class UserRegister(APIView):
     """
     Register new users using phone number and password.
     """
+    serializer_class = UserRegisterSerializer
 
     def post(self, request):
         ser_data = UserRegisterSerializer(data=request.data)
