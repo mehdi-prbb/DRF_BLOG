@@ -9,7 +9,7 @@ class CustomUserAdmin(BaseUserAdmin):
     form = CustomUserChangeForm
     form_add = CustomUserCreationForm
 
-    list_display = ('email', 'phone_number', 'is_admin')
+    list_display = ('phone_number', 'email', 'is_admin')
     list_filter = ('is_admin',)
     readonly_fields = ('last_login',)
 

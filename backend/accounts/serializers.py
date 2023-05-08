@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 import re
 
+from .models import OtpCode
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(required=True, write_only=True)
@@ -32,3 +33,9 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         if data['password'] != data['password2']:
             raise serializers.ValidationError("Passwords doesn't match together.")
         return data
+    
+
+# class OtpCodeSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = OtpCode
+#         fields = '__all__'

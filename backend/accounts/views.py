@@ -1,8 +1,11 @@
+import random
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
 from .serializers import UserRegisterSerializer
+from .models import OtpCode
+from utils import send_otp_code
 
 class UserRegister(APIView):
     """
@@ -14,6 +17,26 @@ class UserRegister(APIView):
         ser_data = UserRegisterSerializer(data=request.data)
         
         if ser_data.is_valid():
-            ser_data.create(ser_data.validated_data)
-            return Response(ser_data.data, status=status.HTTP_201_CREATED)
+            random_code = random.randint(100000, 999999)
+            otp = OtpCode.objects.create(phone_number=ser_data.validated_data['phone_number'], code=random_code)
+
+            print(otp)
+
+            send_otp_code(ser_data.data['phone_number'], random_code)
+
+            email = ser_data.data.get('email')
+            
+            registration_info = {
+                'phone_number': ser_data.validated_data['phone_number'],
+                'password': ser_data.validated_data['password']
+            }
+
+            if email:
+                registration_info['email'] = ser_data.validated_data['email']
+
+            request.session['user_registration_info'] = registration_info
+
+            print(request.session['user_registration_info'])
+            
+            return Response(ser_data.data, status=status.HTTP_308_PERMANENT_REDIRECT)
         return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
