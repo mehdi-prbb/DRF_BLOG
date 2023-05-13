@@ -5,7 +5,8 @@ from rest_framework import status
 
 from .serializers import UserRegisterSerializer
 from .models import OtpCode
-from utils import send_otp_code
+from .custom_exceptions import DuplicatePhoneNumberException
+from .utils import send_otp_code
 
 class UserRegister(APIView):
     """
@@ -18,9 +19,12 @@ class UserRegister(APIView):
         
         if ser_data.is_valid():
             random_code = random.randint(100000, 999999)
-            otp = OtpCode.objects.create(phone_number=ser_data.validated_data['phone_number'], code=random_code)
 
-            print(otp)
+            try:
+                OtpCode.objects.create(phone_number=ser_data.validated_data['phone_number'], code=random_code)
+            except:
+                raise DuplicatePhoneNumberException()
+            
 
             send_otp_code(ser_data.data['phone_number'], random_code)
 
@@ -36,6 +40,7 @@ class UserRegister(APIView):
 
             request.session['user_registration_info'] = registration_info
 
+            # test it will be deleted
             print(request.session['user_registration_info'])
             
             return Response(ser_data.data, status=status.HTTP_308_PERMANENT_REDIRECT)
