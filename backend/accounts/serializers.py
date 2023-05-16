@@ -1,6 +1,6 @@
+import re
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-import re
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -15,10 +15,6 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             "password2"
         )
         extra_kwargs = {'password': {'write_only': True}}
-
-    def create(self, validated_data):
-        del validated_data['password2']
-        return get_user_model().objects.create_user(**validated_data)
     
     def validate_password(self, value):
         pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$'
@@ -36,3 +32,4 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 class OtpVerifySerializer(serializers.Serializer):
         code = serializers.IntegerField(required=True)
+
