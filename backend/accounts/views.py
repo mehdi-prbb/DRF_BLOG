@@ -73,7 +73,8 @@ class OtpVerify(APIView):
             elif ser_code.data['code'] == code_instance.code:
                 CustomUser.objects.create_user(**user_session)
                 code_instance.delete()
-                return Response(user_session, status=status.HTTP_201_CREATED)
+                del user_session
+                return Response({'message':'new account created'}, status=status.HTTP_201_CREATED)
         
         return Response({'message':'invalid input'}, status=status.HTTP_400_BAD_REQUEST)
     
