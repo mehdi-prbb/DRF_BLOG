@@ -33,3 +33,21 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 class OtpVerifySerializer(serializers.Serializer):
         code = serializers.IntegerField(required=True)
 
+
+def check_email_or_phone(value):
+    if '@' in value:
+        try:
+            get_user_model().objects.get(email=value)
+        except get_user_model().DoesNotExist:
+            raise serializers.ValidationError("Invalid email or password.")
+    else: 
+        try:
+            get_user_model().objects.get(phone_number=value)
+        except get_user_model().DoesNotExist:
+            raise serializers.ValidationError("Invalid phone number or password.")
+
+
+class LoginSerializer(serializers.Serializer):
+    email_or_phone = serializers.CharField(validators=[check_email_or_phone])
+    password = serializers.CharField()
+

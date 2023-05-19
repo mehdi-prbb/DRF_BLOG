@@ -5,8 +5,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth import authenticate, login
 
-from .serializers import UserRegisterSerializer, OtpVerifySerializer
+from .serializers import UserRegisterSerializer, OtpVerifySerializer, LoginSerializer
 from .models import OtpCode, CustomUser
 from .custom_exceptions import DuplicatePhoneNumberException
 from .utils import send_otp_code
@@ -52,6 +53,8 @@ class OtpVerify(APIView):
     get otp code from user to verify it.
     """
 
+    serializer_class = OtpVerifySerializer
+
     def post(self, request):
         user_session = request.session['user_registration_info']
 
@@ -77,4 +80,29 @@ class OtpVerify(APIView):
                 return Response({'message':'new account created'}, status=status.HTTP_201_CREATED)
         
         return Response({'message':'invalid input'}, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class LoginView(APIView):
+
+    serializer_class = LoginSerializer
+
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            email_or_phone = serializer.data['email_or_phone']
+            password = serializer.data['password']
+
+            user = authenticate(request, username=email_or_phone, password=password)
+
+            if user is not None:
+                login(request, user)
+                return Response("Login successful", status=status.HTTP_200_OK)
+            else:
+                if '@' in email_or_phone:
+                    return Response("invalid email or password", status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    return Response("invalid phone number or password", status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     
