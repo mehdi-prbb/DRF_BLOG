@@ -5,12 +5,18 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import UserRegisterSerializer, OtpVerifySerializer, LoginSerializer
+
 from .models import OtpCode, CustomUser
 from .custom_exceptions import DuplicatePhoneNumberException
 from .utils import send_otp_code
+from .serializers import (UserRegisterSerializer,
+                          OtpVerifySerializer,
+                          LoginSerializer,
+                          LogoutSerializer)
 
 class UserRegister(APIView):
     """
@@ -96,7 +102,13 @@ class LoginView(APIView):
 
             if user is not None:
                 login(request, user)
-                return Response("Login successful", status=status.HTTP_200_OK)
+
+                refresh = RefreshToken.for_user(user)
+        
+                return Response({
+                                'refresh_token': str(refresh),
+                                'access_token': str(refresh.access_token),
+                            })
             else:
                 if '@' in email_or_phone:
                     return Response("invalid email or password", status=status.HTTP_400_BAD_REQUEST)
@@ -104,5 +116,17 @@ class LoginView(APIView):
                     return Response("invalid phone number or password", status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+
+class LogoutView(APIView):
+    serializer_class = LogoutSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        serializer = LogoutSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response('You are logged out', status=status.HTTP_204_NO_CONTENT)
 
     
