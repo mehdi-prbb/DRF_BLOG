@@ -72,3 +72,14 @@ class LogoutSerializer(serializers.Serializer):
             RefreshToken(self.token).blacklist()
         except TokenError:
             self.fail('bad_token')
+
+
+class changePasswordSerializer(serializers.Serializer):
+    model = get_user_model()
+
+    """
+    serializer for password change endpoint.
+    """
+
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
