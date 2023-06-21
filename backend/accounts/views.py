@@ -16,7 +16,8 @@ from .utils import send_otp_code
 from .serializers import (UserRegisterSerializer,
                           OtpVerifySerializer,
                           LoginSerializer,
-                          LogoutSerializer)
+                          LogoutSerializer,
+                          changePasswordSerializer,)
 
 class UserRegister(APIView):
     """
@@ -129,4 +130,26 @@ class LogoutView(APIView):
         serializer.save()
         return Response('You are logged out', status=status.HTTP_204_NO_CONTENT)
 
+
+class ChangePassword(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self, query=None):
+        return self.request.user
     
+    def put(self, request):
+        self.object = self.get_object()
+        serializer = changePasswordSerializer(data=request.data)
+
+        if serializer.is_valid():
+            # check old password
+            old_password = serializer.data.get("old_password")
+            if not self.object.check_password(old_password):
+                return Response('Wrong old password', status=status.HTTP_400_BAD_REQUEST)
+            # set new password
+            self.object.set_password(serializer.data.get("new_password"))
+            self.object.save()
+            return Response('Password changed', status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
