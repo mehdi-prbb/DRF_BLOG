@@ -17,7 +17,7 @@ from .serializers import (UserRegisterSerializer,
                           OtpVerifySerializer,
                           LoginSerializer,
                           LogoutSerializer,
-                          changePasswordSerializer,)
+                          ChangePasswordSerializer,)
 
 class UserRegister(APIView):
     """
@@ -146,7 +146,7 @@ class ChangePassword(APIView):
     change password
     """
 
-    serializer_class = changePasswordSerializer
+    serializer_class = ChangePasswordSerializer
     permission_classes = (IsAuthenticated,)
 
 
@@ -155,7 +155,7 @@ class ChangePassword(APIView):
     
     def put(self, request):
         self.object = self.get_object()
-        serializer = changePasswordSerializer(data=request.data)
+        serializer = ChangePasswordSerializer(data=request.data)
 
         if serializer.is_valid():
             # check old password

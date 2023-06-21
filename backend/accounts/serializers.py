@@ -98,7 +98,7 @@ class LogoutSerializer(serializers.Serializer):
             self.fail('bad_token')
 
 
-class changePasswordSerializer(serializers.Serializer):
+class ChangePasswordSerializer(serializers.Serializer):
 
     """
     serializer for password change endpoint.
