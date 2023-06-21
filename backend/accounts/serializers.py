@@ -83,3 +83,7 @@ class changePasswordSerializer(serializers.Serializer):
 
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
+
+    def validate_new_password(self, value):
+        UserRegisterSerializer.validate_password(value)
+        return value
