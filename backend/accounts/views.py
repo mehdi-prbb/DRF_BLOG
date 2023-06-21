@@ -21,7 +21,8 @@ from .serializers import (UserRegisterSerializer,
 
 class UserRegister(APIView):
     """
-    Register new users using phone number and password.
+    Register new user using phone number and password
+    and send otp.
     """
     serializer_class = UserRegisterSerializer
 
@@ -91,6 +92,10 @@ class OtpVerify(APIView):
 
 class LoginView(APIView):
 
+    """
+    log in
+    """
+
     serializer_class = LoginSerializer
 
     def post(self, request):
@@ -121,6 +126,10 @@ class LoginView(APIView):
 
 
 class LogoutView(APIView):
+
+    """
+    log out
+    """
     serializer_class = LogoutSerializer
     permission_classes = (IsAuthenticated,)
 
@@ -132,7 +141,14 @@ class LogoutView(APIView):
 
 
 class ChangePassword(APIView):
+
+    """
+    change password
+    """
+
+    serializer_class = changePasswordSerializer
     permission_classes = (IsAuthenticated,)
+
 
     def get_object(self, query=None):
         return self.request.user

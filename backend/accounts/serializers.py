@@ -5,8 +5,24 @@ from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
+def validate_password(value):
+        
+        """
+        Password validator to check password strength
+        """
+        pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$'
+        match = re.search(pattern, value)
+
+        if not match:
+            raise serializers.ValidationError('The password must have at least 8 characters, numbers, upper and lower case letters and symbols (@$!%*?&)')
+        return value
+
 
 class UserRegisterSerializer(serializers.ModelSerializer):
+
+    """
+    serializer for register endpoint.
+    """
     password2 = serializers.CharField(required=True, write_only=True)
 
     class Meta:
@@ -17,15 +33,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             "password",
             "password2"
         )
-        extra_kwargs = {'password': {'write_only': True}}
-    
-    def validate_password(self, value):
-        pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$'
-        match = re.search(pattern, value)
-
-        if not match:
-            raise serializers.ValidationError('The password must have at least 8 characters, numbers, upper and lower case letters and symbols (@$!%*?&)')
-        return value
+        extra_kwargs = {'password': {'write_only': True, 'validators':[validate_password]}}
     
     def validate(self, data):
         if data['password'] != data['password2']:
@@ -34,10 +42,18 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     
 
 class OtpVerifySerializer(serializers.Serializer):
-        code = serializers.IntegerField(required=True)
+        
+    """
+    serializer for otp verify endpoint.
+    """
+    code = serializers.IntegerField(required=True)
 
 
 def check_email_or_phone(value):
+
+    """
+    Checking the email or phone number of the input entered by the user
+    """
     if '@' in value:
         try:
             get_user_model().objects.get(email=value)
@@ -51,11 +67,19 @@ def check_email_or_phone(value):
 
 
 class LoginSerializer(serializers.Serializer):
+
+    """
+    serializer for log in endpoint.
+    """
     email_or_phone = serializers.CharField(validators=[check_email_or_phone])
     password = serializers.CharField()
 
 
 class LogoutSerializer(serializers.Serializer):
+
+    """
+    serializer for log out endpoint.
+    """
     refresh = serializers.CharField()
 
     default_error_messages = {
@@ -75,15 +99,11 @@ class LogoutSerializer(serializers.Serializer):
 
 
 class changePasswordSerializer(serializers.Serializer):
-    model = get_user_model()
 
     """
     serializer for password change endpoint.
     """
+    model = get_user_model()
 
     old_password = serializers.CharField(required=True)
-    new_password = serializers.CharField(required=True)
-
-    def validate_new_password(self, value):
-        UserRegisterSerializer.validate_password(value)
-        return value
+    new_password = serializers.CharField(required=True, validators=[validate_password])
